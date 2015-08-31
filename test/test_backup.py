@@ -14,7 +14,7 @@ class TestBackup(unittest.TestCase):
         pass
 
     def test_get_file_checksum(self):
-        root = 'tests/test_backup_files'
+        root = 'test_backup_files'
         test_file_name = 'textfile.txt'
         test_file = os.path.join(root, test_file_name)
         checksum_calc = backup.Backup().get_file_checksum(test_file)
@@ -26,13 +26,12 @@ class TestBackup(unittest.TestCase):
         self.assertEqual(checksum_calc, checksum_read)
 
     def test_get_file_attributes(self):
-        root = 'tests/test_backup_files'
+        root = 'test_backup_files'
         test_file_name = 'flacfile.flac'
         test_file = os.path.join(root, test_file_name)
-        file_attributes_calc = [None]*2
-        file_attributes_calc[0] = backup.Backup().get_file_checksum(test_file)
-        file_attributes_calc[1] = backup.Backup().get_file_mtime(test_file)
-        file_attributes_read = backup.Backup().get_file_attributes(test_file)
+        file_attributes_calc = backup.Backup().get_file_attributes_calc(test_file)
+        # backup.Backup().set_file_attributes(test_file, file_attributes_calc)
+        file_attributes_read = backup.Backup().get_file_attributes_read(test_file)
         self.assertEqual(file_attributes_calc, file_attributes_read)
 
 if __name__ == '__main__':

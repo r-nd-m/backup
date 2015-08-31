@@ -141,5 +141,5 @@ class Backup:
         return(file_attributes)
 
     def set_file_attributes(self, file, file_attributes):
-        os.setxattr(file, self.att_sum, file_attributes[0])
-        os.setxattr(file, self.att_time, file_attributes[1])
+        os.setxattr(file, self.att_sum, bytes(file_attributes[0], 'utf-8'))
+        os.setxattr(file, self.att_time, bytes(file_attributes[1], 'utf-8'))
