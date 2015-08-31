@@ -3,7 +3,6 @@ import threading
 import subprocess
 import os
 
-
 class Backup:
 
     """A backup class"""
@@ -48,9 +47,10 @@ class Backup:
     def check(self):
         pass
 
-    def get_file_checksum(self, file):
+    @staticmethod
+    def get_file_checksum(file):
         # using external checksum commands due to performance considerations
-        cmd = [self.method, file]
+        cmd = [Backup.method, file]
         p = subprocess.Popen(cmd,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
