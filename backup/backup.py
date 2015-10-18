@@ -1,10 +1,11 @@
-import queue
-import threading
+# import queue
+# import threading
 import subprocess
+import sqlite3
 import os
 
-class Backup:
 
+class Backup:
     """A backup class"""
     # list of source directories
     source_directory = []
@@ -46,6 +47,74 @@ class Backup:
 
     def check(self):
         pass
+
+    @staticmethod
+    def analyze_file(file):
+        pass
+
+    @staticmethod
+    def log_table_create(connection, table_name):
+
+        t_session = '''CREATE TABLE session
+                       ( session_id INTEGER PRIMARY KEY,
+                         status CHAR(1) NOT NULL,
+                         message CHAR(3) NOT NULL,
+                         time_started DATETIME NOT NULL,
+                         time_completed DATETIME
+                       );'''
+
+        t_file = '''CREATE TABLE file
+                    ( session_id INTEGER NOT NULL,
+                      file_id INTEGER NOT NULL,
+                      status CHAR(1) NOT NULL,
+                      message CHAR(3) NOT NULL,
+                      time_started DATETIME NOT NULL,
+                      time_completed DATETIME,
+                      directory VARCHAR(1024) NOT NULL,
+                      file VARCHAR(255) NOT NULL,
+                      sha512sum_old CHAR(128),
+                      mtime_old CHAR(35),
+                      sum512sum_new CHAR(128) NOT NULL,
+                      mtime_new CHAR(35) NOT NULL,
+                      PRIMARY KEY (session_id, file_id)
+                    );'''
+
+        t_iteration = ''' CREATE TABLE iteration
+                    ( session_id INTEGER NOT NULL,
+                      file_id INTEGER NOT NULL,
+                      iteration_id INTEGER NOT NULL,
+                      status CHAR(1) NOT NULL,
+                      message CHAR(3) NOT NULL,
+                      time_started DATETIME NOT NULL,
+                      time_completed DATETIME,
+                      directory_source VARCHAR(1024) NOT NULL,
+                      file_source VARCHAR(255) NOT NULL,
+                      directory_destination VARCHAR(1024) NOT NULL,
+                      file_destination VARCHAR(255) NOT NULL,
+                      PRIMARY KEY (session_id, file_id, iteration_id)
+                    );'''
+
+        t_parameter = ''' CREATE TABLE parameter
+                    ( session_id INTEGER NOT NULL,
+                      parameter_id INTEGER NOT NULL,
+                      parameter_name VARCHAR(128) NOT NULL,
+                      parameter_value VARCHAR(1024) NOT NULL,
+                      PRIMARY KEY (session_id, parameter_id)
+                    );'''
+
+        cursor = connection.cursor()
+
+        if table_name == 'Session':
+            try:
+                cursor.execute(t_session)
+            except sqlite3.OperationalError:
+                print("Ta tabela już istnieje.")
+        elif table_name == 'File':
+            cursor.execute(t_file)
+        elif table_name == 'Iteration':
+            cursor.execute(t_iteration)
+        elif table_name == 'Parameter':
+            cursor.execute(t_parameter)
 
     @staticmethod
     def get_file_checksum(file):
