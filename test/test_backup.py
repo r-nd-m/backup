@@ -1,11 +1,10 @@
 from unittest import TestCase
 from unittest import main
-from backup import backup
+from backup.backup import Backup
 import array
 import math
 import os
 import random
-import sqlite3
 import string
 import subprocess
 import wave
@@ -42,20 +41,20 @@ class TestBackup(TestCase):
 
     @staticmethod
     def create_sample_text_file(file_name, size, seed):
+        """ Create  """
         random.seed(seed)
         file = open(file_name, 'w')
         text = ''.join(random.choice(string.printable) for _ in range(size))
         file.write(text)
         file.close()
-        file_attributes_calc = backup.Backup.get_file_attributes_calc(file_name)
-        backup.Backup().set_file_attributes(file_name, file_attributes_calc)
-
+        file_attributes_calc = Backup.get_file_attributes_calc(file_name)
+        Backup.set_file_attributes(file_name, file_attributes_calc)
 
     @staticmethod
     def create_file_checksum(file_name):
         file = open(file_name + '.sum', 'w')
-        sum = backup.Backup.get_file_checksum(file_name)
-        file.write(sum)
+        checksum = Backup.get_file_checksum(file_name)
+        file.write(checksum)
         file.close()
 
     def setUp(self):
@@ -68,7 +67,7 @@ class TestBackup(TestCase):
 
     def test_get_file_checksum(self):
         test_file = 'textfile.txt'
-        checksum_calc = backup.Backup.get_file_checksum(test_file)
+        checksum_calc = Backup.get_file_checksum(test_file)
         test_file_sum = test_file + '.sum'
         file = open(test_file_sum)
         checksum_read = file.read().split(" ")[0]
@@ -77,17 +76,13 @@ class TestBackup(TestCase):
 
     def test_get_file_attributes(self):
         test_file = 'textfile.txt'
-        file_attributes_calc = backup.Backup.get_file_attributes_calc(test_file)
-        file_attributes_read = backup.Backup.get_file_attributes_read(test_file)
+        file_attributes_calc = Backup.get_file_attributes_calc(test_file)
+        file_attributes_read = Backup.get_file_attributes_read(test_file)
         self.assertEqual(file_attributes_calc, file_attributes_read)
 
     def test_log_table_create(self):
-        conn = sqlite3.connect('example.db')
-        backup.Backup.log_table_create(conn, 'Session')
-        backup.Backup.log_table_create(conn, 'File')
-        backup.Backup.log_table_create(conn, 'Iteration')
-        backup.Backup.log_table_create(conn, 'Parameter')
-        conn.close()
+        Backup.backup_start(self)
+
 
 if __name__ == '__main__':
     main()
