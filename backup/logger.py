@@ -1,9 +1,37 @@
+from enum import Enum
 import datetime
 import sqlite3
 
 
-class Message:
+class MessageType(Enum):
+    """ Message type enumerator class """
+
+    success = 'success'
+    information = 'information'
+    warning = 'warning'
+    error = 'error'
+
+
+class MessageGen(Enum):
+    attribute = 'attribute'
+    database = 'database'
+    file = 'file'
+    iteration = 'iteration'
+    log = 'log'
+    parameter = 'parameter'
+    session = 'session'
+
+
+class MessageVal(Enum):
+    pass
+
+
+class Message():
     """A message class"""
+
+    def __init__(self, message_type: MessageType, message_gen: MessageGen):
+        self.message_type = message_type
+        self.message_gen = message_gen
 
     log_table_created_log = ['I','001']
     log_table_created_session = ['I', '002']
